@@ -1,6 +1,7 @@
 #ifndef header_h
 #define header_h
 
+#include <math.h>
 #include <vector>
 #include <iostream>
 
