@@ -4,7 +4,7 @@ void Fields::solvePressure()
 {
     double error = 1;
     double resP, rP;
-    double flux_no_pressure_correction;
+    double flux_no_pressure_correction, diffsuionP;
 
     while(error > 1e-3)
     {
@@ -16,13 +16,50 @@ void Fields::solvePressure()
             {
                 for (int i=1; i<=nx_; i++)
                 {
-                    flux_no_pressure_correction = 
-                    resP  = 0.5 * ( (field_.u_pred[i+1][j][k] - field_.u_pred[i-1][j] )/dx_ 
-                    + ( field_.v_pred[i][j+1][k] - field_.v_pred[i][j-1][k] )/dy_ ) 
-                    + ( field_.w_pred[i][j][k+1] - field_.w_pred[i][j][k-1] )/dz_ ) - dt_ * ( p_star[i+1][j] - 2*p_star[i][j] + p_star[i-1][j])/(dx*dx) - dt * ( p_star[i][j+1] - 2*p_star[i][j] + p_star[i][j-1])/(dy*dy);
-                res = res + R * R;                                                     // Adding square of residues for RMS
-                p_star[i][j] = - 1.5*R/( 2*dt/(dx*dx) + 2*dt/(dy*dy) ) + p_star[i][j];           // correction for next iteration
+                    flux_no_pressure_correction = 0.5 * ( field_.u_pred[i+1][j][k] - field_.u_pred[i-1][j][k] ) * areaX_
+                    + 0.5 * ( field_.v_pred[i][j+1][k] - field_.v_pred[i][j-1][k] ) * areaY_
+                    + 0.5 * ( field_.w_pred[i][j][k+1] - field_.w_pred[i][j][k-1] ) * areaZ_;
+
+                    diffsuionP = ( field_.p[i+1][j][k] -2*field_.p[i][j][k] + field_.p[i-1][j][k] ) * diff_disc_coffX_
+                    + ( field_.p[i][j+1][k] -2*field_.p[i][j][k] + field_.p[i][j-1][k] ) * diff_disc_coffY_
+                    + ( field_.p[i][j][k+1] -2*field_.p[i][j][k] + field_.p[i][j][k-1] ) * diff_disc_coffZ_;
+
+                    rP  = density_/dt_ * flux_no_pressure_correction - diffsuionP;
+                    resP = resP + rP * rP;                                                   
+                    field_.p[i][j][k] = - 1.5*rP/diff_cen_coff + field_.p[i][j][k]; 
                 }
+            }
+        }
+
+        // BC for pressure
+
+        // East & West
+        for (int k=1; k<=nz_; k++)
+        {
+            for (int j=1 ; j<=ny_; j++)     
+            {
+                field_.p[0][j][k] = field_.p[1][j][k];
+                field_.p[nx_+1][j][k] = field_.p[nx_][j][k];
+            }
+        }
+
+        // North & South
+        for (int k=1; k<=nz_; k++)
+        {
+            for (int i=1; i<=nx_; i++)    
+            {
+                field_.p[i][0][k] = field_.p[i][1][k];
+                field_.p[i][ny_+1][k] = field_.p[i][ny_][k];
+            }
+        }
+
+        // Front & Back
+        for (int j=1; j<=ny_; j++)
+        {
+            for (int i=1; i<=nx_; i++) 
+            {
+                field_.p[i][j][0] = field_.p[i][j][1];
+                field_.p[i][j][nz_+1] = field_.p[i][j][nz_];
             }
         }
 

@@ -78,4 +78,6 @@ class Fields{
 
 };
 
+// git reset --hard HEAD
+
 #endif

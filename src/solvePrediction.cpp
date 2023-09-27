@@ -20,11 +20,11 @@ void Fields::solvePrediction()
                 {
                     // Calculating fluxes
                     fluxE_ = 0.5 * ( field_.u_curr[i][j][k] + field_.u_curr[i+1][j][k] ) * areaX_;
-                    fluxW_ = 0.5 * ( field_.u_curr[i][j][k] + field_.u_curr[i-1][j][k] ) * areaX_;
+                    fluxW_ = -0.5 * ( field_.u_curr[i][j][k] + field_.u_curr[i-1][j][k] ) * areaX_;
                     fluxN_ = 0.5 * ( field_.v_curr[i][j][k] + field_.v_curr[i][j+1][k] ) * areaY_;
-                    fluxS_ = 0.5 * ( field_.v_curr[i][j][k] + field_.v_curr[i][j-1][k] ) * areaY_;
+                    fluxS_ = -0.5 * ( field_.v_curr[i][j][k] + field_.v_curr[i][j-1][k] ) * areaY_;
                     fluxF_ = 0.5 * ( field_.w_curr[i][j][k] + field_.w_curr[i][j][k+1] ) * areaZ_;
-                    fluxB_ = 0.5 * ( field_.w_curr[i][j][k] + field_.w_curr[i][j][k-1] ) * areaZ_;
+                    fluxB_ = -0.5 * ( field_.w_curr[i][j][k] + field_.w_curr[i][j][k-1] ) * areaZ_;
 
                     // Upwind scheme
 
