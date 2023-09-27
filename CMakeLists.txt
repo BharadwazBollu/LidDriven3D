@@ -17,6 +17,8 @@ include_directories(${INCLUDE_DIR})
 set(SOURCES
     src/header.cpp
     src/main.cpp
+    src/solvePrediction.cpp
+    src/solvePressure.cpp
 )
 
 # list header files
