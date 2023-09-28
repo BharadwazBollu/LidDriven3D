@@ -1,9 +1,5 @@
 #include "header.h"
 
-void hello(){
-    std::cout << "hello" ;
-}
-
 Fields::Fields(int nx, int ny, int nz, double nu, double density, double dt)
 :nx_(nx), ny_(ny), nz_(nz), nu_(nu), density_(density), dt_(dt)
 {

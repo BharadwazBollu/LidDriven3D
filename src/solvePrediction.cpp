@@ -6,6 +6,8 @@ void Fields::solvePrediction()
     double resU, resV, resW;
     double rU, rV, rW;
 
+    std::cout << "Entered Prediction" << std::endl;
+
     while(error > 1e-3)
     {
         resU = 0.0;
@@ -32,86 +34,86 @@ void Fields::solvePrediction()
                     if ( fluxE_ >= 0.0 )
                     {
                         uE_ = field_.u_curr[i][j][k];
-                        vE_ = field_.u_curr[i][j][k];
-                        wE_ = field_.u_curr[i][j][k];
+                        vE_ = field_.v_curr[i][j][k];
+                        wE_ = field_.w_curr[i][j][k];
                         conv_diag_ = conv_diag_ + fluxE_;
                     }
                     else
                     {
                         uE_ = field_.u_curr[i+1][j][k];
-                        vE_ = field_.u_curr[i+1][j][k];
-                        wE_ = field_.u_curr[i+1][j][k];
+                        vE_ = field_.v_curr[i+1][j][k];
+                        wE_ = field_.w_curr[i+1][j][k];
                     }
 
                     if ( fluxW_ >= 0.0 )
                     {
                         uW_ = field_.u_curr[i][j][k];
-                        vW_ = field_.u_curr[i][j][k];
-                        wW_ = field_.u_curr[i][j][k];
+                        vW_ = field_.v_curr[i][j][k];
+                        wW_ = field_.w_curr[i][j][k];
                         conv_diag_ = conv_diag_ + fluxW_;
                     }
                     else
                     {
                         uW_ = field_.u_curr[i-1][j][k];
-                        vW_ = field_.u_curr[i-1][j][k];
-                        wW_ = field_.u_curr[i-1][j][k];
+                        vW_ = field_.v_curr[i-1][j][k];
+                        wW_ = field_.w_curr[i-1][j][k];
                     }
 
 
                     if ( fluxN_ >= 0.0 )
                     {
                         uN_ = field_.u_curr[i][j][k];
-                        vN_ = field_.u_curr[i][j][k];
-                        wN_ = field_.u_curr[i][j][k];
+                        vN_ = field_.v_curr[i][j][k];
+                        wN_ = field_.w_curr[i][j][k];
                         conv_diag_ = conv_diag_ + fluxN_;
                     }
                     else
                     {
-                        uN_ = field_.u_curr[i+1][j][k];
-                        vN_ = field_.u_curr[i+1][j][k];
-                        wN_ = field_.u_curr[i+1][j][k];
+                        uN_ = field_.u_curr[i][j+1][k];
+                        vN_ = field_.v_curr[i][j+1][k];
+                        wN_ = field_.w_curr[i][j+1][k];
                     }
 
                     if ( fluxS_ >= 0.0 )
                     {
                         uS_ = field_.u_curr[i][j][k];
-                        vS_ = field_.u_curr[i][j][k];
-                        wS_ = field_.u_curr[i][j][k];
+                        vS_ = field_.v_curr[i][j][k];
+                        wS_ = field_.w_curr[i][j][k];
                         conv_diag_ = conv_diag_ + fluxS_;
                     }
                     else
                     {
-                        uS_ = field_.u_curr[i-1][j][k];
-                        vS_ = field_.u_curr[i-1][j][k];
-                        wS_ = field_.u_curr[i-1][j][k];
+                        uS_ = field_.u_curr[i][j-1][k];
+                        vS_ = field_.v_curr[i][j-1][k];
+                        wS_ = field_.w_curr[i][j-1][k];
                     }
 
                     if ( fluxF_ >= 0.0 )
                     {
                         uF_ = field_.u_curr[i][j][k];
-                        vF_ = field_.u_curr[i][j][k];
-                        wF_ = field_.u_curr[i][j][k];
+                        vF_ = field_.v_curr[i][j][k];
+                        wF_ = field_.w_curr[i][j][k];
                         conv_diag_ = conv_diag_ + fluxF_;
                     }
                     else
                     {
                         uF_ = field_.u_curr[i][j][k+1];
-                        vF_ = field_.u_curr[i][j][k+1];
-                        wF_ = field_.u_curr[i][j][k+1];
+                        vF_ = field_.v_curr[i][j][k+1];
+                        wF_ = field_.w_curr[i][j][k+1];
                     }
 
                     if ( fluxB_ >= 0.0 )
                     {
                         uB_ = field_.u_curr[i][j][k];
-                        vB_ = field_.u_curr[i][j][k];
-                        wB_ = field_.u_curr[i][j][k];
+                        vB_ = field_.v_curr[i][j][k];
+                        wB_ = field_.w_curr[i][j][k];
                         conv_diag_ = conv_diag_ + fluxB_;
                     }
                     else
                     {
                         uB_ = field_.u_curr[i][j][k-1];
-                        vB_ = field_.u_curr[i][j][k-1];
-                        wB_ = field_.u_curr[i][j][k-1];
+                        vB_ = field_.v_curr[i][j][k-1];
+                        wB_ = field_.w_curr[i][j][k-1];
                     }
 
                     convectionX_ = fluxE_ * uE_ + fluxW_ * uW_ + fluxN_ * uN_ 
@@ -157,6 +159,9 @@ void Fields::solvePrediction()
         }
 
         error = sqrt( (resU + resV + resW)/ (nx_ * ny_ *nz_) );
+        // std::cout << "Error = " << error << std::endl;
    }
+   
+   //std::cout << "Done Prediction" << std::endl;
 
 }

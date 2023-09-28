@@ -6,6 +6,8 @@ void Fields::solvePressure()
     double resP, rP;
     double flux_no_pressure_correction, diffsuionP;
 
+    std::cout << "Entered Pressure" << std::endl;
+
     while(error > 1e-3)
     {
         resP = 0.0;
@@ -30,6 +32,8 @@ void Fields::solvePressure()
                 }
             }
         }
+
+        error = sqrt( resP/ (nx_ * ny_ *nz_) );
 
         // BC for pressure
 
@@ -64,4 +68,7 @@ void Fields::solvePressure()
         }
 
     }
+
+    //std::cout << " Done Pressure " << std::endl;
+
 }

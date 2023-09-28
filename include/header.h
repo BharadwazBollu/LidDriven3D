@@ -5,8 +5,6 @@
 #include <vector>
 #include <iostream>
 
-void hello();
-
 class Fields{
     public:
 
@@ -16,6 +14,8 @@ class Fields{
         void solvePrediction();
         void solvePressure();
         void solveCorrection();
+        double calculateError();
+        void exportToVTK(int iter);
         
     private:
         int nx_, ny_, nz_;

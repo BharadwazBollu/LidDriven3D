@@ -19,6 +19,9 @@ set(SOURCES
     src/main.cpp
     src/solvePrediction.cpp
     src/solvePressure.cpp
+    src/solveCorrection.cpp
+    src/calculateError.cpp
+    src/exportToVTK.cpp
 )
 
 # list header files
