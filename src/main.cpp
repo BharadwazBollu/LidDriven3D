@@ -21,7 +21,7 @@ while ( err > 1e-3)
 
     if ( iteration % 1 == 0)
     {
-
+        fields.exportToVTK(iteration);
     }
 
 }
