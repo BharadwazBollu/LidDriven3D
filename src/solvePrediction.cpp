@@ -8,7 +8,7 @@ void Fields::solvePrediction()
 
     std::cout << "Entered Prediction" << std::endl;
 
-    while(error > 1e-3)
+    while(error > 1e-6)
     {
         resU = 0.0;
         resV = 0.0;
@@ -155,6 +155,57 @@ void Fields::solvePrediction()
                     field_.w_pred[i][j][k] = rW/tmp + field_.w_pred[i][j][k];
 
                 }
+            }
+        }
+
+
+        // BC for corrected velocity
+
+        // East & West
+        for (int k=1; k<=nz_; k++)
+        {
+            for (int j=1 ; j<=ny_; j++)     
+            {
+                field_.u_pred[0][j][k] = -field_.u_pred[1][j][k];
+                field_.u_pred[nx_+1][j][k] = -field_.u_pred[nx_][j][k];
+
+                field_.v_pred[0][j][k] = -field_.v_pred[1][j][k];
+                field_.v_pred[nx_+1][j][k] = -field_.v_pred[nx_][j][k];
+
+                field_.w_pred[0][j][k] = -field_.w_pred[1][j][k];
+                field_.w_pred[nx_+1][j][k] = -field_.w_pred[nx_][j][k];
+            }
+        }
+
+        // North & South
+        for (int k=1; k<=nz_; k++)
+        {
+            for (int i=1; i<=nx_; i++)    
+            {
+                field_.u_pred[i][0][k] = -field_.u_pred[i][1][k];
+                field_.u_pred[i][ny_+1][k] = -field_.u_pred[i][ny_][k];
+
+                field_.v_pred[i][0][k] = -field_.v_pred[i][1][k];
+                field_.v_pred[i][ny_+1][k] = -field_.v_pred[i][ny_][k];
+
+                field_.w_pred[i][0][k] = -field_.w_pred[i][1][k];
+                field_.w_pred[i][ny_+1][k] = -field_.w_pred[i][ny_][k];
+            }
+        }
+
+        // Front & Back
+        for (int j=1; j<=ny_; j++)
+        {
+            for (int i=1; i<=nx_; i++) 
+            {
+                field_.u_pred[i][j][0] = -field_.u_pred[i][j][1];
+                field_.u_pred[i][j][nz_+1] = 2 - field_.u_pred[i][j][nz_];
+
+                field_.v_pred[i][j][0] = -field_.v_pred[i][j][1];
+                field_.v_pred[i][j][nz_+1] = -field_.v_pred[i][j][nz_];
+
+                field_.w_pred[i][j][0] = -field_.w_pred[i][j][1];
+                field_.w_pred[i][j][nz_+1] = -field_.w_pred[i][j][nz_];
             }
         }
 

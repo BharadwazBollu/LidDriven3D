@@ -34,6 +34,3 @@ add_executable(CFD3D ${SOURCES} ${HEADERS})
 
 # link additional dependencies
 # target_link_libraries(CFD3D library_name)
-
-
-

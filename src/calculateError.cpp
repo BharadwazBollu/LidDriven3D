@@ -20,5 +20,8 @@ double Fields::calculateError()
         }
     }
 
+    error = error/( nx_ * ny_ * nz_ );
+    error = sqrt(error)/dt_;
+
     return error;
 }

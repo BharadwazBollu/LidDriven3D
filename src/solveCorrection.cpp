@@ -8,7 +8,7 @@ void Fields::solveCorrection()
 
     std::cout << "Entered Correction" << std::endl;
 
-    while(error > 1e-2)
+    while(error > 2e-4)
     {
         resU = 0.0;
         resV = 0.0;
@@ -21,18 +21,18 @@ void Fields::solveCorrection()
                 for (int i=1; i<=nx_; i++)
                 {
                     // Calculating fluxes
-                    fluxE_ = 0.5 * ( field_.u_curr[i][j][k] + field_.u_curr[i+1][j][k] ) * areaX_ 
-                    - dt_/density_ * ( field_.p[i+1][j][k] - field_.p[i][j][k]) * areaX_;
-                    fluxW_ = -0.5 * ( field_.u_curr[i][j][k] + field_.u_curr[i-1][j][k] ) * areaX_
-                    - dt_/density_ * ( field_.p[i-1][j][k] - field_.p[i][j][k]) * areaX_;
-                    fluxN_ = 0.5 * ( field_.v_curr[i][j][k] + field_.v_curr[i][j+1][k] ) * areaY_
-                    - dt_/density_ * ( field_.p[i][j+1][k] - field_.p[i][j][k]) * areaY_;
-                    fluxS_ = -0.5 * ( field_.v_curr[i][j][k] + field_.v_curr[i][j-1][k] ) * areaY_
-                    - dt_/density_ * ( field_.p[i][j-1][k] - field_.p[i][j][k]) * areaY_;
-                    fluxF_ = 0.5 * ( field_.w_curr[i][j][k] + field_.w_curr[i][j][k+1] ) * areaZ_
-                    - dt_/density_ * ( field_.p[i][j][k+1] - field_.p[i][j][k]) * areaZ_;
-                    fluxB_ = -0.5 * ( field_.w_curr[i][j][k] + field_.w_curr[i][j][k-1] ) * areaZ_
-                    - dt_/density_ * ( field_.p[i][j][k-1] - field_.p[i][j][k]) * areaZ_;
+                    fluxE_ = 0.5 * ( field_.u_pred[i][j][k] + field_.u_pred[i+1][j][k] ) * areaX_ 
+                    - dt_/density_ * ( field_.p[i+1][j][k] - field_.p[i][j][k]) * areaX_/dx_;
+                    fluxW_ = -0.5 * ( field_.u_pred[i][j][k] + field_.u_pred[i-1][j][k] ) * areaX_
+                    - dt_/density_ * ( field_.p[i-1][j][k] - field_.p[i][j][k]) * areaX_/dx_;
+                    fluxN_ = 0.5 * ( field_.v_pred[i][j][k] + field_.v_pred[i][j+1][k] ) * areaY_
+                    - dt_/density_ * ( field_.p[i][j+1][k] - field_.p[i][j][k]) * areaY_/dy_;
+                    fluxS_ = -0.5 * ( field_.v_pred[i][j][k] + field_.v_pred[i][j-1][k] ) * areaY_
+                    - dt_/density_ * ( field_.p[i][j-1][k] - field_.p[i][j][k]) * areaY_/dy_;
+                    fluxF_ = 0.5 * ( field_.w_pred[i][j][k] + field_.w_pred[i][j][k+1] ) * areaZ_
+                    - dt_/density_ * ( field_.p[i][j][k+1] - field_.p[i][j][k]) * areaZ_/dz_;
+                    fluxB_ = -0.5 * ( field_.w_pred[i][j][k] + field_.w_pred[i][j][k-1] ) * areaZ_
+                    - dt_/density_ * ( field_.p[i][j][k-1] - field_.p[i][j][k]) * areaZ_/dz_;
 
                     // Upwind scheme
 
@@ -147,19 +147,19 @@ void Fields::solveCorrection()
 
                     rU = Vp_ * density_/dt_ * ( field_.u_curr[i][j][k] - field_.u[i][j][k] ) 
                     - convectionX_ * density_ + nu_ * diffusionX_
-                    - 0.5 * ( field_.p[i+1][j][k] + field_.p[i-1][j][k]) * areaX_ ;
+                    - 0.5 * ( field_.p[i+1][j][k] - field_.p[i-1][j][k]) * areaX_ ;
                     resU = resU + rU * rU ;
                     field_.u[i][j][k] = rU/tmp + field_.u[i][j][k];
 
                     rV = Vp_ * density_/dt_ * ( field_.v_curr[i][j][k] - field_.v[i][j][k] ) 
                     - convectionY_ * density_ + nu_ * diffusionY_
-                    - 0.5 * ( field_.p[i][j+1][k] + field_.p[i][j-1][k]) * areaY_;
+                    - 0.5 * ( field_.p[i][j+1][k] - field_.p[i][j-1][k]) * areaY_;
                     resV = resV + rV * rV ;
                     field_.v[i][j][k] = rW/tmp + field_.v[i][j][k];
 
                     rW = Vp_ * density_/dt_ *( field_.w_curr[i][j][k] - field_.w[i][j][k] ) 
                     - convectionZ_ * density_ + nu_ * diffusionZ_
-                    - 0.5 * ( field_.p[i][j][k+1] + field_.p[i][j][k-1]) * areaZ_;
+                    - 0.5 * ( field_.p[i][j][k+1] - field_.p[i][j][k-1]) * areaZ_;
                     resW = resW + rW * rW;
                     field_.w[i][j][k] = rW/tmp + field_.w[i][j][k];
 
@@ -167,7 +167,59 @@ void Fields::solveCorrection()
             }
         }
 
+        // BC for corrected velocity
+
+        // East & West
+        for (int k=1; k<=nz_; k++)
+        {
+            for (int j=1 ; j<=ny_; j++)     
+            {
+                field_.u[0][j][k] = -field_.u[1][j][k];
+                field_.u[nx_+1][j][k] = -field_.u[nx_][j][k];
+
+                field_.v[0][j][k] = -field_.v[1][j][k];
+                field_.v[nx_+1][j][k] = -field_.v[nx_][j][k];
+
+                field_.w[0][j][k] = -field_.w[1][j][k];
+                field_.w[nx_+1][j][k] = -field_.w[nx_][j][k];
+            }
+        }
+
+        // North & South
+        for (int k=1; k<=nz_; k++)
+        {
+            for (int i=1; i<=nx_; i++)    
+            {
+                field_.u[i][0][k] = -field_.u[i][1][k];
+                field_.u[i][ny_+1][k] = -field_.u[i][ny_][k];
+
+                field_.v[i][0][k] = -field_.v[i][1][k];
+                field_.v[i][ny_+1][k] = -field_.v[i][ny_][k];
+
+                field_.w[i][0][k] = -field_.w[i][1][k];
+                field_.w[i][ny_+1][k] = -field_.w[i][ny_][k];
+            }
+        }
+
+        // Front & Back
+        for (int j=1; j<=ny_; j++)
+        {
+            for (int i=1; i<=nx_; i++) 
+            {
+                field_.u[i][j][0] = -field_.u[i][j][1];
+                field_.u[i][j][nz_+1] = 2 - field_.u[i][j][nz_];
+
+                field_.v[i][j][0] = -field_.v[i][j][1];
+                field_.v[i][j][nz_+1] = -field_.v[i][j][nz_];
+
+                field_.w[i][j][0] = -field_.w[i][j][1];
+                field_.w[i][j][nz_+1] = -field_.w[i][j][nz_];
+            }
+        }
+
         error = sqrt( (resU + resV + resW)/ (nx_ * ny_ *nz_) );
+
+        // std::cout << " Correction residual = " << error << std::endl;
    }
 
    //std::cout << "Done Correction" << std::endl;

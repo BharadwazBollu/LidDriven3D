@@ -28,7 +28,7 @@ void Fields::solvePressure()
 
                     rP  = density_/dt_ * flux_no_pressure_correction - diffsuionP;
                     resP = resP + rP * rP;                                                   
-                    field_.p[i][j][k] = - 1.5*rP/diff_cen_coff + field_.p[i][j][k]; 
+                    field_.p[i][j][k] = - 1.3*rP/diff_cen_coff + field_.p[i][j][k]; 
                 }
             }
         }
