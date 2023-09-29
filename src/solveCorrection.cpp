@@ -8,7 +8,7 @@ void Fields::solveCorrection()
 
     std::cout << "Entered Correction" << std::endl;
 
-    while(error > 2e-4)
+    while(error > 1e-3)
     {
         resU = 0.0;
         resV = 0.0;
@@ -143,23 +143,23 @@ void Fields::solveCorrection()
 
 
                     double tmp;
-                    tmp = Vp_ * density_/dt_ + density_ * conv_diag_ + nu_ * diff_cen_coff;
+                    tmp = 1 + conv_diag_ * dt_/Vp_ + nu_ * diff_cen_coff * dt_/(Vp_ * density_);
 
-                    rU = Vp_ * density_/dt_ * ( field_.u_curr[i][j][k] - field_.u[i][j][k] ) 
-                    - convectionX_ * density_ + nu_ * diffusionX_
-                    - 0.5 * ( field_.p[i+1][j][k] - field_.p[i-1][j][k]) * areaX_ ;
+                    rU = field_.u_curr[i][j][k] - field_.u[i][j][k] - convectionX_ * dt_/Vp_ 
+                    + nu_ * diffusionX_ * dt_/(Vp_ * density_)
+                    - 0.5 * ( field_.p[i+1][j][k] - field_.p[i-1][j][k]) * areaX_ * dt_/(Vp_ * density_);
                     resU = resU + rU * rU ;
                     field_.u[i][j][k] = rU/tmp + field_.u[i][j][k];
 
-                    rV = Vp_ * density_/dt_ * ( field_.v_curr[i][j][k] - field_.v[i][j][k] ) 
-                    - convectionY_ * density_ + nu_ * diffusionY_
-                    - 0.5 * ( field_.p[i][j+1][k] - field_.p[i][j-1][k]) * areaY_;
+                    rV = field_.v_curr[i][j][k] - field_.v[i][j][k] 
+                    - convectionY_ * dt_/Vp_ + nu_ * diffusionY_ * dt_/(Vp_ * density_)
+                    - 0.5 * ( field_.p[i][j+1][k] - field_.p[i][j-1][k]) * areaY_ * dt_/(Vp_ * density_);
                     resV = resV + rV * rV ;
                     field_.v[i][j][k] = rW/tmp + field_.v[i][j][k];
 
-                    rW = Vp_ * density_/dt_ *( field_.w_curr[i][j][k] - field_.w[i][j][k] ) 
-                    - convectionZ_ * density_ + nu_ * diffusionZ_
-                    - 0.5 * ( field_.p[i][j][k+1] - field_.p[i][j][k-1]) * areaZ_;
+                    rW = field_.w_curr[i][j][k] - field_.w[i][j][k]
+                    - convectionZ_ * dt_/Vp_ + nu_ * diffusionZ_ * dt_/(Vp_ * density_)
+                    - 0.5 * ( field_.p[i][j][k+1] - field_.p[i][j][k-1]) * areaZ_ * dt_/(Vp_ * density_);
                     resW = resW + rW * rW;
                     field_.w[i][j][k] = rW/tmp + field_.w[i][j][k];
 

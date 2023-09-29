@@ -8,7 +8,7 @@ void Fields::solvePrediction()
 
     std::cout << "Entered Prediction" << std::endl;
 
-    while(error > 1e-6)
+    while(error > 1e-4)
     {
         resU = 0.0;
         resV = 0.0;
@@ -137,20 +137,20 @@ void Fields::solvePrediction()
 
 
                     double tmp;
-                    tmp = Vp_ * density_/dt_ + density_ * conv_diag_ + nu_ * diff_cen_coff;
+                    tmp = 1 + conv_diag_ * dt_/Vp_ + nu_ * diff_cen_coff * dt_/(Vp_ * density_);
 
-                    rU = Vp_ * density_/dt_ * ( field_.u_curr[i][j][k] - field_.u_pred[i][j][k] ) 
-                    - convectionX_ * density_ + nu_ * diffusionX_ ;
+                    rU = field_.u_curr[i][j][k] - field_.u_pred[i][j][k]
+                    - convectionX_ * dt_/Vp_ + nu_ * diffusionX_ * dt_/(Vp_ * density_) ;
                     resU = resU + rU * rU ;
                     field_.u_pred[i][j][k] = rU/tmp + field_.u_pred[i][j][k];
 
-                    rV = Vp_ * density_/dt_ * ( field_.v_curr[i][j][k] - field_.v_pred[i][j][k] ) 
-                    - convectionY_ * density_ + nu_ * diffusionY_ ;
+                    rV = field_.v_curr[i][j][k] - field_.v_pred[i][j][k] 
+                    - convectionY_ * dt_/Vp_ + nu_ * diffusionY_ * dt_/(Vp_ * density_) ;
                     resV = resV + rV * rV ;
                     field_.v_pred[i][j][k] = rW/tmp + field_.v_pred[i][j][k];
 
-                    rW = Vp_ * density_/dt_ *( field_.w_curr[i][j][k] - field_.w_pred[i][j][k] ) 
-                    - convectionZ_ * density_ + nu_ * diffusionZ_ ;
+                    rW = field_.w_curr[i][j][k] - field_.w_pred[i][j][k] 
+                    - convectionZ_ * dt_/Vp_ + nu_ * diffusionZ_ * dt_/(Vp_ * density_);
                     resW = resW + rW * rW;
                     field_.w_pred[i][j][k] = rW/tmp + field_.w_pred[i][j][k];
 
