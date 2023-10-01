@@ -34,6 +34,7 @@ void Fields::solvePressure()
         }
 
         error = sqrt( resP/ (nx_ * ny_ *nz_) );
+        // std::cout << " Pressure residual " << error << std::endl;
 
         // BC for pressure
 

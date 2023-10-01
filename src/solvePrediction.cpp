@@ -8,7 +8,7 @@ void Fields::solvePrediction()
 
     std::cout << "Entered Prediction" << std::endl;
 
-    while(error > 1e-4)
+    while(error > 1e-6)
     {
         resU = 0.0;
         resV = 0.0;
@@ -137,20 +137,20 @@ void Fields::solvePrediction()
 
 
                     double tmp;
-                    tmp = 1 + conv_diag_ * dt_/Vp_ + nu_ * diff_cen_coff * dt_/(Vp_ * density_);
+                    tmp = Vp_ * density_/dt_ + conv_diag_ * density_ + nu_ * diff_cen_coff;
 
-                    rU = field_.u_curr[i][j][k] - field_.u_pred[i][j][k]
-                    - convectionX_ * dt_/Vp_ + nu_ * diffusionX_ * dt_/(Vp_ * density_) ;
+                    rU = Vp_ * density_ * ( field_.u_curr[i][j][k] - field_.u_pred[i][j][k] )/dt_
+                    - convectionX_ * density_ + nu_ * diffusionX_ ;
                     resU = resU + rU * rU ;
                     field_.u_pred[i][j][k] = rU/tmp + field_.u_pred[i][j][k];
 
-                    rV = field_.v_curr[i][j][k] - field_.v_pred[i][j][k] 
-                    - convectionY_ * dt_/Vp_ + nu_ * diffusionY_ * dt_/(Vp_ * density_) ;
+                    rV = Vp_ * density_ * ( field_.v_curr[i][j][k] - field_.v_pred[i][j][k] )/dt_
+                    - convectionY_ * density_ + nu_ * diffusionY_ ;
                     resV = resV + rV * rV ;
-                    field_.v_pred[i][j][k] = rW/tmp + field_.v_pred[i][j][k];
+                    field_.v_pred[i][j][k] = rV/tmp + field_.v_pred[i][j][k];
 
-                    rW = field_.w_curr[i][j][k] - field_.w_pred[i][j][k] 
-                    - convectionZ_ * dt_/Vp_ + nu_ * diffusionZ_ * dt_/(Vp_ * density_);
+                    rW = Vp_ * density_ * ( field_.w_curr[i][j][k] - field_.w_pred[i][j][k] )/dt_
+                    - convectionZ_ * density_ + nu_ * diffusionZ_;
                     resW = resW + rW * rW;
                     field_.w_pred[i][j][k] = rW/tmp + field_.w_pred[i][j][k];
 
@@ -158,7 +158,8 @@ void Fields::solvePrediction()
             }
         }
 
-
+        /*
+        
         // BC for corrected velocity
 
         // East & West
@@ -208,6 +209,7 @@ void Fields::solvePrediction()
                 field_.w_pred[i][j][nz_+1] = -field_.w_pred[i][j][nz_];
             }
         }
+        */
 
         error = sqrt( (resU + resV + resW)/ (nx_ * ny_ *nz_) );
         // std::cout << "Error = " << error << std::endl;

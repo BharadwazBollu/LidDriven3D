@@ -52,9 +52,9 @@ class Fields{
         double diffusionX_, diffusionY_, diffusionZ_;
 
         // Diffusion descretization denominators constants ( to save repereated computation )
-        double diff_disc_coffX_ = 1.0 / ( dx_ * dx_ );
-        double diff_disc_coffY_ = 1.0 / ( dy_ * dy_ );
-        double diff_disc_coffZ_ = 1.0 / ( dz_ * dz_ );
+        double diff_disc_coffX_ = areaX_ / dx_;
+        double diff_disc_coffY_ = areaY_ / dy_;
+        double diff_disc_coffZ_ = areaZ_ / dz_;
 
         // Diffusion central coefficient
         double diff_cen_coff = 2 * ( diff_disc_coffX_ + diff_disc_coffY_ + diff_disc_coffZ_ );

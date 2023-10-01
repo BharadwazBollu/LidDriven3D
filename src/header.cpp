@@ -22,9 +22,9 @@ void Fields::initialise()
 {
     // Top BC 
     int k = nz_+1;
-    for(int j=0; j<=ny_; j++)
+    for(int j=0; j<=ny_+1; j++)
     {
-        for(int i=0; i<=nx_; i++){
+        for(int i=0; i<=nx_+1; i++){
             field_.u[i][j][k] = 1.0;
             field_.u_curr[i][j][k] = 1.0;
             field_.u_pred[i][j][k] = 1.0;
