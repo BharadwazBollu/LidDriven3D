@@ -1,6 +1,6 @@
 #include "header.h"
 
-double Fields::calculateError()
+double LidDrivenCavity::calculateError()
 {
     double error = 0.0;
 

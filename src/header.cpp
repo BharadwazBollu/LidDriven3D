@@ -1,9 +1,18 @@
 #include "header.h"
 
-Fields::Fields(int nx, int ny, int nz, double nu, double density, double dt)
-:nx_(nx), ny_(ny), nz_(nz), nu_(nu), density_(density), dt_(dt)
+LidDrivenCavity::LidDrivenCavity(int nx, int ny, int nz, double lid_velocity,
+double mu, double density, double dt, double x_length, double y_length, 
+double z_length, double prediction_tolerance, double pressure_tolerance,
+double correction_tolerance, int write_interval)
+:nx_(nx), ny_(ny), nz_(nz), lid_velocity_(lid_velocity),
+mu_(mu), density_(density),  dt_(dt), x_length_(x_length), 
+y_length_(y_length), z_length_(z_length), 
+prediction_tolerance_(prediction_tolerance),
+pressure_tolerance_(pressure_tolerance),
+correction_tolerance_(correction_tolerance),
+write_interval_(write_interval)
 {
-
+    // Giving size for field variable as per input including ghost cells
     field_.u.resize(nz_+2, std::vector<std::vector<double>>(ny_+2, std::vector<double>(nx_+2, 0.0)));
     field_.v.resize(nz_+2, std::vector<std::vector<double>>(ny_+2, std::vector<double>(nx_+2, 0.0)));
     field_.w.resize(nz_+2, std::vector<std::vector<double>>(ny_+2, std::vector<double>(nx_+2, 0.0)));
@@ -14,22 +23,7 @@ Fields::Fields(int nx, int ny, int nz, double nu, double density, double dt)
     field_.v_curr.resize(nz_+2, std::vector<std::vector<double>>(ny_+2, std::vector<double>(nx_+2, 0.0)));
     field_.w_curr.resize(nz_+2, std::vector<std::vector<double>>(ny_+2, std::vector<double>(nx_+2, 0.0)));
     field_.p.resize(nz_+2, std::vector<std::vector<double>>(ny_+2, std::vector<double>(nx_+2, 0.0)));
-    
 }
 
-
-void Fields::initialise()
-{
-    // Top BC 
-    int k = nz_+1;
-    for(int j=0; j<=ny_+1; j++)
-    {
-        for(int i=0; i<=nx_+1; i++){
-            field_.u[i][j][k] = 1.0;
-            field_.u_curr[i][j][k] = 1.0;
-            field_.u_pred[i][j][k] = 1.0;
-        }
-    }
-}
 
 

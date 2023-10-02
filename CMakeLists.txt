@@ -16,6 +16,7 @@ include_directories(${INCLUDE_DIR})
 # list source files
 set(SOURCES
     src/header.cpp
+    src/initialize.cpp
     src/main.cpp
     src/solvePrediction.cpp
     src/solvePressure.cpp

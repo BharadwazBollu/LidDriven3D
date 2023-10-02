@@ -1,7 +1,7 @@
 #include "header.h"
 #include <fstream>
 
-void Fields::exportToVTK(int iter)
+void LidDrivenCavity::exportToVTK(int iter)
 {
     std::ofstream fid;
 
@@ -14,8 +14,6 @@ void Fields::exportToVTK(int iter)
     fid << "ASCII" << std::endl;
     fid << "DATASET STRUCTURED_GRID" << std::endl;
     fid << "DIMENSIONS " << nx_ + 2 << " " << ny_ + 2 << " " << nz_ + 2 << std::endl;
-    //fid << "ASPECT_RATIO " << 1 << " " << 1 << " " << 1 << std::endl;
-    //fid << "ORIGIN " << 0 << " " << 0 << " " << 0 << std::endl;
     fid << "POINTS " << ( (nx_ + 2) * (ny_ + 2) * (nz_ + 2) ) << " double" << std::endl;
 
     // Write the point coordinates

@@ -1,43 +1,35 @@
 #include "header.h"
 
-void Fields::solvePressure()
+void LidDrivenCavity::solvePressure()
 {
-    double error = 1;
-    double resP, rP;
-    double flux_no_pressure_correction, diffsuionP;
+    error_ = 1;
 
-    std::cout << "Entered Pressure" << std::endl;
-
-    while(error > 1e-3)
+    while(error_ > pressure_tolerance_)
     {
-        resP = 0.0;
-
+        p_rms_ = 0.0;
+        // loop for ineterior cells
         for (int k=1; k<=nz_; k++)
         {
             for (int j=1; j<=ny_; j++)
             {
                 for (int i=1; i<=nx_; i++)
                 {
-                    flux_no_pressure_correction = 0.5 * ( field_.u_pred[i+1][j][k] - field_.u_pred[i-1][j][k] ) * areaX_
-                    + 0.5 * ( field_.v_pred[i][j+1][k] - field_.v_pred[i][j-1][k] ) * areaY_
-                    + 0.5 * ( field_.w_pred[i][j][k+1] - field_.w_pred[i][j][k-1] ) * areaZ_;
+                    flux_no_pressure_correction_ = 0.5 * ( field_.u_pred[i+1][j][k] - field_.u_pred[i-1][j][k] ) * x_area_
+                    + 0.5 * ( field_.v_pred[i][j+1][k] - field_.v_pred[i][j-1][k] ) * y_area_
+                    + 0.5 * ( field_.w_pred[i][j][k+1] - field_.w_pred[i][j][k-1] ) * z_area_;
 
-                    diffsuionP = ( field_.p[i+1][j][k] -2*field_.p[i][j][k] + field_.p[i-1][j][k] ) * diff_disc_coffX_
-                    + ( field_.p[i][j+1][k] -2*field_.p[i][j][k] + field_.p[i][j-1][k] ) * diff_disc_coffY_
-                    + ( field_.p[i][j][k+1] -2*field_.p[i][j][k] + field_.p[i][j][k-1] ) * diff_disc_coffZ_;
+                    p_diffusion_ = ( field_.p[i+1][j][k] -2*field_.p[i][j][k] + field_.p[i-1][j][k] ) * x_diffusion_coefficient_
+                    + ( field_.p[i][j+1][k] -2*field_.p[i][j][k] + field_.p[i][j-1][k] ) * y_diffusion_coefficient_
+                    + ( field_.p[i][j][k+1] -2*field_.p[i][j][k] + field_.p[i][j][k-1] ) * z_diffusion_coefficient_;
 
-                    rP  = density_/dt_ * flux_no_pressure_correction - diffsuionP;
-                    resP = resP + rP * rP;                                                   
-                    field_.p[i][j][k] = -rP/diff_cen_coff + field_.p[i][j][k]; 
+                    p_residual_  = density_/dt_ * flux_no_pressure_correction_ - p_diffusion_;
+                    p_rms_ = p_rms_ + p_residual_ * p_residual_;                                                   
+                    field_.p[i][j][k] = -p_residual_/diff_cen_coff + field_.p[i][j][k]; 
                 }
             }
         }
 
-        error = sqrt( resP/ (nx_ * ny_ *nz_) );
-        // std::cout << " Pressure residual " << error << std::endl;
-
-        // BC for pressure
-
+        // Boundary conditions for pressure
         // East & West
         for (int k=1; k<=nz_; k++)
         {
@@ -47,7 +39,6 @@ void Fields::solvePressure()
                 field_.p[nx_+1][j][k] = field_.p[nx_][j][k];
             }
         }
-
         // North & South
         for (int k=1; k<=nz_; k++)
         {
@@ -57,7 +48,6 @@ void Fields::solvePressure()
                 field_.p[i][ny_+1][k] = field_.p[i][ny_][k];
             }
         }
-
         // Front & Back
         for (int j=1; j<=ny_; j++)
         {
@@ -67,9 +57,13 @@ void Fields::solvePressure()
                 field_.p[i][j][nz_+1] = field_.p[i][j][nz_];
             }
         }
-
+        // error for gauss seidal
+        error_ = sqrt( p_rms_/cell_count_ );
+        // counting the number of iterations
+        p_local_iteartion_++;
     }
 
-    //std::cout << " Done Pressure " << std::endl;
+    std::cout << "Gauss seidal solver:  Solving for pressure, residual = " 
+    << p_rms_ << " No iterations " << p_local_iteartion_ << std::endl;
 
 }
