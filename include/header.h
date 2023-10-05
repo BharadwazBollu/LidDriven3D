@@ -12,7 +12,7 @@ class LidDrivenCavity{
         LidDrivenCavity(int nx, int ny, int nz, double lid_velocity,
         double mu, double density, double dt, double x_length, double y_length, 
         double z_length, double prediction_tolerance, double pressure_tolerance,
-        double correction_tolerance, int write_interval);
+        double correction_tolerance);
 
         void initialize();
         void solvePrediction();

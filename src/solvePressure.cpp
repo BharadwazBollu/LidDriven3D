@@ -3,6 +3,7 @@
 void LidDrivenCavity::solvePressure()
 {
     error_ = 1;
+    p_local_iteartion_ = 0;
 
     while(error_ > pressure_tolerance_)
     {
@@ -58,7 +59,8 @@ void LidDrivenCavity::solvePressure()
             }
         }
         // error for gauss seidal
-        error_ = sqrt( p_rms_/cell_count_ );
+        p_rms_ = sqrt( p_rms_/cell_count_ );
+        error_ = p_rms_;
         // counting the number of iterations
         p_local_iteartion_++;
     }
